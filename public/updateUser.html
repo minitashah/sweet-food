@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<div ng-controller="getCtrl">
+		<form ng-submit="go()">
+			<p> first Name: <input type="text" ng-model="formObj.fname"> </p>
+			<p> last name: <input type="text" ng-model="formObj.lname"> </p>
+			<p>{{userData.fname + ' ' + userData.lname}}</p>
+			<input type="submit" name="submit" value="submit">
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html ng-app="orderApp">
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<title></title>
+	<style type="text/css">
+		table, th, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+		}
+		th, td {
+			padding-right: 10px
+		}
+	</style>
+</head>
+<body>
+	<div ng-controller="myCtrl">
+		<form ng-submit="go()">
+			<p> Shop Name: <input type="text" ng-model="shopData.name"> </p>
+			<p> address: <input type="text" ng-model="shopData.address"> </p>
+			<p> Info: <input type="text" ng-model="shopData.info"> </p>
+			<p> description: <input type="txet" ng-model="shopData.description"> </p>
+			<p> <input type="submit" value="submit" name="shopData.submit"> </p>
+			{{shopData.name}}
+		</form>
+	</div>
+
+	<div ng-controller="shopCtrl">
+		<table border="1px solid black">
+			<tr>
+				<th>No</th>
+				<th>Shop Name</th>
+				<th>Address</th>
+				<th>Info</th>
+				<th>Desription</th>
+				<th>Action</th>
+			</tr>
+			<tr ng-repeat="x in data">
+				<td>{{$index + 1}}</td>
+				<td>{{x.name}}</td>
+				<td>{{x.address}}</td>
+				<td>{{x.info}}</td>
+				<td>{{x.description}}</td>
+				<td><a href="javascript:void(0)" type="button" ng-click="remove(x._id)">delete</a></td>
+			</tr>
+		</table>
+	</div>
+
+	<script>
+	var app = angular.module('orderApp', []);
+
+	app.controller('myCtrl', function($scope, $http){
+		$scope.shopData = {}; // storing data
+		$scope.go = function () {
+
+			$http.post('/api/shops/create', $scope.shopData).then(function (response) {
+				alert("create Shop");
+	
+				$scope.shopData = response.data;
+				
+				$scope.shopData = {};
+			}, function() {
+				alert("error when create shop")
+			});
+		};
+	});
+
+	app.controller('shopCtrl', function($scope, $http){
+		$http.get('/api/shops/').then(function (response) {
+				$scope.data = response.data;
+		}); 
+		$scope.remove = function (shopid) {
+			$http.delete('/api/shops/' + shopid).then(function(response) {
+				$http.get('/api/shops/').then(function (response) {
+					$scope.data = response.data;
+				});	
+			}, function () {
+				console.log('not ok');
+			});
+		}
+	});
+	</script>
+</body>
+</html>

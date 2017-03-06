@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<title></title>
+	<style type="text/css">
+		table, th, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+		}
+		th, td {
+			padding-right: 10px
+		}
+	</style>
+</head>
+<body>
+
+<div ng-controller="myCtrl">
+	<form ng-submit="go()">
+		<p> first Name: <input type="text" ng-model="formObj.fname"> </p>
+		<p> last name: <input type="text" ng-model="formObj.lname"> </p>
+		<p> Address: <input type="text" ng-model="formObj.address"></p>
+		<p> Phone: <input type="number" ng-model="formObj.phone"></p>
+		<p> Email: <input type="text" ng-model="formObj.email"></p>
+		<p>{{userData.fname + ' ' + userData.lname}}</p>
+		<input type="submit" name="submit" value="submit">
+	</form>
+</div>
+
+<div ng-controller="getCtrl">
+	<h3>User Info Table</h3>
+	<table>
+		<tr>
+			<th>Id</th>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Address</th>
+			<th>Phone</th>
+			<th>Email</th>
+			<th>Edit</th>
+			<th>Action</th>
+		</tr>
+		<tr ng-repeat="x in userData | orderBy: 'fname'">
+			<td>{{$index + 1}}</td>
+			<td>{{x.fname}}</td>
+			<td>{{x.lname}}</td>
+			<td>{{x.address}}</td>
+			<td>{{x.phone}}</td>
+			<td>{{x.email}}</td>
+			<td><a href="javascript:void(0)" ng-click="edit()">Edit</a></td>
+			<td><a href="./updateUser.html" type="button" ng-click="deleteuser(x._id)">Delete</a></td>
+		</tr>
+	</table>
+</div>
+
+<!-- Example of angular directive -->
+<custom></custom>
+
+<script type="text/javascript">
+
+	var app = angular.module("myApp", []); // setter which returns getter
+
+	/** Controller example */
+	app.controller("myCtrl", function ($scope, $http) { // use getter to define different components inside app
+		
+		$scope.formObj = {};
+
+		$scope.go = function () {
+			console.log($scope.formObj);
+
+			// send data to server
+			$http.post("/api/users/create", $scope.formObj).then(function (response) {
+				alert("User successfully created.");
+				// console.log(response);
+				$scope.userData = response.data; // store response data into controller variable
+				// console.log($scope.userData);
+				$scope.formObj = {}; // empty the form
+			}, function () {
+				alert("Error when creating user.");
+			});
+		};
+
+	});
+
+	app.controller('getCtrl', function($scope, $http){
+		$http.get("/api/users").then(function (response) {
+			$scope.userData = response.data;
+		});
+
+		$scope.deleteuser = function (userId) {
+			$http.delete("/api/users/" + userId).then(function (response) {
+				$http.get("/api/users").then(function (response) {
+					$scope.userData = response.data;
+				});
+			}, function () {
+				console.log("Not Ok");
+			}); 
+		};
+
+		$scope.edit = function () {
+			$http.put('/api/users/update', data, config).then(function (response) {
+
+			}, function() {
+
+			});
+		};
+	});
+
+
+	/** Typical example of directive */
+	// app.directive('custom', [function(){
+	// 	return {
+	// 		restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
+	// 		template: '<h1>Hi.</h1><p>This is custom component.</p><button ng-click="go()">Click me</button>',
+	// 		link: function (scope, el, attrs) {
+	// 			scope.go = function () {
+	// 				alert("ok");
+	// 			};
+	// 		}
+	// 	};
+	// }]);
+
+</script>
+
+</body>
+</html>
