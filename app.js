@@ -11,6 +11,7 @@ var items = require('./routes/items');
 var shops = require('./routes/shops');
 var order = require('./routes/order');
 var itemCategory = require('./routes/itemCategory');
+var folder = require('./routes/folder');
 
 var app = express();
 
@@ -33,6 +34,7 @@ app.use('/api/items', items);
 app.use('/api/shops', shops);
 app.use('/api/order', order);
 app.use('/api/itemCategory', itemCategory);
+app.use('/api/folder', folder);
 
 
 // catch 404 and forward to error handler

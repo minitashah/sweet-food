@@ -6,3 +6,32 @@ body {
 a {
   color: #00B7FF;
 }
+
+.main {
+	width: 100%;
+}
+table {
+	float: left;
+	width: 60%;
+}
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+th, td {
+	padding-right: 10px
+}
+
+.single-user-infosection {
+	float: left;
+	width: 30%;
+	border: 1px solid black;
+	padding: 10px;
+	margin-left: 10px;
+}
+
+.userDetailUpdate {
+	float: left;
+	width: 30%;
+	margin-left: 10px
+}

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var db = require('../database');
 var h = require('./helper');
-var allowedParams = ['id', 'fname', 'lname', 'address', 'phone', 'email', 'pwd', 'createdAt'];
+var allowedParams = ['_id', 'fname', 'lname', 'address', 'phone', 'email', 'pwd', 'createdAt'];
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -20,7 +20,9 @@ router.get('/:id', function(req, res) {
 		if (err) {
 			res.send(err);
 		} else {
-			res.send(result);
+			if(result.length > 0 ) {
+				res.send(result[0]);
+			}
 		}
 	});
 });
@@ -41,7 +43,8 @@ router.post('/create', function(req, res, next) {
 
 router.put('/update', function(req,res) {
 	req.body = h.filterAllowedParams(req.body, allowedParams);
-	db.user.update({_id: req.body.id}, req.body, {new:true}, function(err, updateResult) {
+	console.log(req.body);
+	db.user.update({_id: req.body._id}, req.body, {new:true}, function(err, updateResult) {
 			if (err) {
 			res.status(500).send(err);
 		} else {

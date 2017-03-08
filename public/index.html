@@ -3,15 +3,7 @@
 <head>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 	<title></title>
-	<style type="text/css">
-		table, th, td {
-			border: 1px solid black;
-			border-collapse: collapse;
-		}
-		th, td {
-			padding-right: 10px
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 </head>
 <body>
 
@@ -27,7 +19,7 @@
 	</form>
 </div>
 
-<div ng-controller="getCtrl">
+<div ng-controller="getCtrl" class="main">
 	<h3>User Info Table</h3>
 	<table>
 		<tr>
@@ -40,17 +32,33 @@
 			<th>Edit</th>
 			<th>Action</th>
 		</tr>
-		<tr ng-repeat="x in userData | orderBy: 'fname'">
+		<tr ng-repeat="user in data | orderBy: 'fname'">
 			<td>{{$index + 1}}</td>
-			<td>{{x.fname}}</td>
-			<td>{{x.lname}}</td>
-			<td>{{x.address}}</td>
-			<td>{{x.phone}}</td>
-			<td>{{x.email}}</td>
-			<td><a href="javascript:void(0)" ng-click="edit()">Edit</a></td>
-			<td><a href="./updateUser.html" type="button" ng-click="deleteuser(x._id)">Delete</a></td>
+			<td><a href="javascript:void(0)" ng-click="userDetail(user._id)">{{user.fname}}</a></td>
+			<td>{{user.lname}}</td>
+			<td>{{user.address}}</td>
+			<td>{{user.phone}}</td>
+			<td>{{user.email}}</td>
+			<td><a href="javascript:void(0)" ng-click="populateFormDetails(user)">Edit</a></td>
+			<td><a href="javascript:void(0)" type="button" ng-click="deleteuser(user._id)">Delete</a></td>
 		</tr>
 	</table>
+	<div class="single-user-infosection">
+		<h3>Profile Info</h3>
+		<p>First Name: {{singleUserData.fname}}</p>
+		<p>Last Name: {{singleUserData.lname}}</p>
+	</div>
+	<div class="userDetailUpdate">
+		<form ng-submit="updateUserDetails()">
+		<p> first Name: <input type="text" ng-model="updateObj.fname"> </p>
+		<p> last name: <input type="text" ng-model="updateObj.lname"> </p>
+		<p> Address: <input type="text" ng-model="updateObj.address"></p>
+		<p> Phone: <input type="text" ng-model="updateObj.phone"></p>
+		<p> Email: <input type="text" ng-model="updateObj.email"></p>
+		<p>{{editUserInfo.fname + ' ' + editUserInfo.lname}}</p>
+		<input type="submit" name="submit" value="submit">
+	</form>	
+	</div>
 </div>
 
 <!-- Example of angular directive -->
@@ -73,7 +81,7 @@
 				alert("User successfully created.");
 				// console.log(response);
 				$scope.userData = response.data; // store response data into controller variable
-				// console.log($scope.userData);
+				console.log($scope.userData);
 				$scope.formObj = {}; // empty the form
 			}, function () {
 				alert("Error when creating user.");
@@ -83,27 +91,42 @@
 	});
 
 	app.controller('getCtrl', function($scope, $http){
+		
 		$http.get("/api/users").then(function (response) {
-			$scope.userData = response.data;
+			$scope.data = response.data;
 		});
 
 		$scope.deleteuser = function (userId) {
 			$http.delete("/api/users/" + userId).then(function (response) {
 				$http.get("/api/users").then(function (response) {
-					$scope.userData = response.data;
+					$scope.data = response.data;
 				});
 			}, function () {
-				console.log("Not Ok");
+				alert("user not delete");
 			}); 
 		};
 
-		$scope.edit = function () {
-			$http.put('/api/users/update', data, config).then(function (response) {
-
-			}, function() {
-
+		$scope.userDetail = function(id) {
+			$http.get("/api/users/" + id).then(function (response) {
+				$scope.singleUserData = response.data;
 			});
 		};
+
+		$scope.updateObj = {};
+		$scope.populateFormDetails = function (userData) {
+			console.log(userData);
+			$scope.updateObj = userData;
+		};
+
+		$scope.updateUserDetails = function () {
+			$http.put("/api/users/update",$scope.updateObj).then(function (response) {
+				$scope.editUserInfo = response.config.data;
+				console.log($scope.editUserInfo);
+			}, function () {
+				console.log("not ok");
+			});
+		};
+
 	});
 
 
